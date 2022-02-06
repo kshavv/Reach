@@ -1,6 +1,11 @@
 const express =require("express");
 const app=express();
 
+const connectDB=require('./config/db');
+
+
+//connect Database
+connectDB();
 
 
 app.get('/',(req,res)=>{
