@@ -7,6 +7,9 @@ const connectDB=require('./config/db');
 //connect Database
 connectDB();
 
+//INit body parser middleware
+app.use(express.json({extended:false}));
+
 
 app.get('/',(req,res)=>{
     res.send("API Running");
@@ -20,6 +23,6 @@ app.use('/api/posts',require('./routes/api/posts'));
 
 const PORT=process.env.PORT || 5000;
 app.listen(PORT,()=>{
-    console.log(`sersver started on PORT ${PORT}`);
+    console.log(`server started on PORT ${PORT}`);
 });
 

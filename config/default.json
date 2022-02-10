@@ -1,3 +1,4 @@
 {
-    "mongoURI":"mongodb+srv://ksav123:ksav123@sandboxcluster.wwnva.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+    "mongoURI":"mongodb+srv://ksav123:ksav123@sandboxcluster.wwnva.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",
+    "jwtSecret":"helooworld"
 }
