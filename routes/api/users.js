@@ -19,7 +19,7 @@ const config=require("config");  //we can access all the config variables using 
 //@desc     Register user
 //@access   Public
 
-//array of different checks for the express validator
+//array of different checks for the express validator middleware
 const regDataCheck=[
         check('name','name is required').not().isEmpty(),
         check('email','please include a valid email').isEmail(),

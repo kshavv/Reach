@@ -18,7 +18,7 @@ router.get('/me',auth,async(req,res)=>{
         const profile=await Profile.findOne({user:req.user.id}).populate('user',['name','avatar']);
         if(!profile)
             return res.status(400).json({msg:'There is no profile for this user'});
-        
+          
         res.json(profile);
         
     } catch (error) {
@@ -33,7 +33,6 @@ module.exports=router;
 //@desc     create/update a user profile
 //@access   protected
 
-
 const validationChecks=[
     check('status','Status is required').not().isEmpty(),
     check('skills','Skills is required').not().isEmpty(),
@@ -41,11 +40,59 @@ const validationChecks=[
 
 
 //here we have to use two middleware auth and express-validator middleware 
-router.post('/',[auth,validationChecks],(req,res)=>{
+router.post('/',[auth,validationChecks],async(req,res)=>{
 
     const error=validationResult(req);
-    if(!errors.isEmpty()){
-        return res.status(400).json({err:errors.array()});
+    if(!error.isEmpty()){
+        return res.status(400).json({err:error.array()});
+    }
+
+    const {company,website,location,bio,status,githubusername,
+        skills,youtube,facebook,twitter,instagram,linkedin
+    }=req.body;
+
+    //build profile object
+    const profileFields={};
+    profileFields.user=req.user.id; // this user id in request comes after the token is decoded (auth middleware:: line(24))
+    
+    if(company) profileFields.company=company;
+    if(website) profileFields.website=website;
+    if(location) profileFields.location=location;
+    if(bio) profileFields.bio=bio;
+    if(githubusername) profileFields.githubusername=githubusername;
+
+    if(status) profileFields.status=status;
+    if(skills){
+        profileFields.skills=skills.split(',').map(skill=>skill.trim());
+    }
+
+    //build social objects
+    profileFields.social={};
+    if(youtube) profileFields.social.youtube=youtube;
+    if(facebook) profileFields.social.facebook=facebook;
+    if(twitter) profileFields.social.twitter=twitter;
+    if(linkedin) profileFields.social.linkedin=linkedin;
+    if(instagram) profileFields.social.instagram=instagram;
+
+    //save profile details on database
+    try {
+        
+        let profile=await Profile.findOne({user:req.user.id});
+        if(profile){
+            //profile already exist that means profile is being updated
+            profile=await Profile.findOneAndUpdate({user:req.user.id},{$set:profileFields},{new:true});
+            return res.json(profile);
+        }
+
+        //create the profile
+        profile=new Profile(profileFields);
+        await profile.save();
+        res.json(profile);
+
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
     }
 
 })
