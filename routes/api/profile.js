@@ -106,8 +106,8 @@ router.post('/',[auth,validationChecks],async(req,res)=>{
 router.get('/',async(req,res)=>{
     try {
       
-        const profile=await Profile.find().populate('user',['name','avatar']);
-        res.json(profile);
+        const profiles=await Profile.find().populate('user',['name','avatar']);
+        res.json(profiles);
 
     } catch (error) {
         console.error(error.message);
@@ -135,3 +135,25 @@ router.get('/user/:user_id',async(req,res)=>{
     }
 })
 
+
+
+//@route    Delete api/profile
+//@desc     Delete profile user and post
+//@access   private
+
+router.delete('/',auth,async(req,res)=>{
+    try {
+        //remove users posts
+
+        //Remove profile and user
+        await Profile.findOneAndRemove({user:req.user.id}); //again, the auth middleware will add the user id 
+        await User.findOneAndRemove({_id:req.user.id}); //again, the auth middleware will add the user id 
+        
+        res.json({msg:"user deleted"});
+
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send('Server Error');        
+    }
+})

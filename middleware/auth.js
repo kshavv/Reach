@@ -5,7 +5,7 @@ const config=require('config');
 
 
 
-module.exports=function(req,res,next){
+module.exports=async function(req,res,next){
 
     //get token from header
     const token=req.header('x-auth-token');
@@ -17,10 +17,17 @@ module.exports=function(req,res,next){
     
     //verify token
     try {
-        jwt.verify(token, config.get("jwtSecret"), (error, decoded) => {
+        jwt.verify(token, config.get("jwtSecret"),async (error, decoded) => {
             if (error) {
               return res.status(401).json({ msg: "Token is not valid" });
             } 
+            const user=await User.findById(decoded.user.id);
+
+            //check if the user for the respective token is present in the database
+            if(!user){
+                return res.status(401).json({msg:"token is not valid"});
+            }
+
             req.user = decoded.user;
             next();
         })
