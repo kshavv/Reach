@@ -26,7 +26,7 @@ router.get('/me',auth,async(req,res)=>{
         res.status(500).send('server Error');
     }
 })
-module.exports=router; 
+
 
 
 //@route    POST api/profile
@@ -202,10 +202,13 @@ router.delete('/experience/:exp_id',auth,async(req,res)=>{
 
         foundProfile.experience.splice(removeIndex,1);
         await foundProfile.save();
-        
+
         return res.status(200).json(foundProfile);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ msg: 'Server error' });
     }
 })
+
+
+module.exports=router; 
